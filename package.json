@@ -1,0 +1,50 @@
+{
+  "name": "@useauthio/edge",
+  "version": "0.2.0",
+  "description": "Verify Authio JWTs at the edge. Runtime-agnostic (Vercel Edge, Deno Deploy, Bun, Node, Cloudflare).",
+  "author": "Authio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/authio-com/authio_edge.git"
+  },
+  "homepage": "https://authio.com",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "jose": "^5.9.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^4.1.0"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.28.1"
+    }
+  }
+}
