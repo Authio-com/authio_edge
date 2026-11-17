@@ -114,20 +114,24 @@ describe("EdgeAuth tenant binding", () => {
     expect(session?.userId).toBe("user_real");
   });
 
-  it("warns but accepts a token with no project_id claim", async () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("rejects a token with no project_id claim when projectId is configured", async () => {
     const auth = new EdgeAuth({ apiUrl, projectId: "proj_victim" });
     const session = await auth.verify(await mint({ sub: "user_legacy", sid: "s1" }));
-    expect(session?.userId).toBe("user_legacy");
-    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/no project_id claim/));
+    expect(session).toBeNull();
   });
 
-  it("warns once, not per request", async () => {
+  it("warns once, not per request, when no projectId is configured", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const auth = new EdgeAuth({ apiUrl, projectId: "proj_victim" });
+    const auth = new EdgeAuth({ apiUrl });
     for (let i = 0; i < 3; i++) {
       await auth.verify(await mint({ sub: "u", sid: `s${i}` }));
     }
     expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not throw on a malformed percent-encoded cookie", async () => {
+    const auth = new EdgeAuth({ apiUrl, projectId: "proj_victim" });
+    const req = new Request("https://app.test/", { headers: { cookie: "authio_session=%E0%A4%A" } });
+    expect(await auth.verifyRequest(req)).toBeNull();
   });
 });
